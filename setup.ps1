@@ -1,4 +1,14 @@
-vagrant up
+Write-Host "Starting Vagrant VM..."
+try {
+    vagrant up *> $null
+} catch {
+    Write-Host "Error while starting VM:"
+    Write-Host $_
+    exit 1
+}
+
+Write-Host "Vagrant VM started successfully."
+
 
 Write-Host "Waiting for Vagrant to be ready..."
 while ($true) {
@@ -9,10 +19,13 @@ while ($true) {
     Start-Sleep -Seconds 5
 }
 
-$SERVER_IP = vagrant ssh -c "hostname -I | awk '{print `$2}'" 2>$null
-$SERVER_IP = $SERVER_IP.Trim()
+Write-Host "Copying ./BGP folder to VM..."
+try {
+    vagrant upload "$PSScriptRoot\BGP" /home/vagrant/BGP *> $null
+} catch {
+    Write-Host "Error while uploading BGP folder:"
+    Write-Host $_
+    exit 1
+}
 
-Write-Host "Detected VM IP: $SERVER_IP"
-
-scp -r ./BGP vagrant@${SERVER_IP}:/home/vagrant/BGP
 Write-Host "Files copied to VM successfully."

@@ -1,15 +1,26 @@
 #!/bin/bash
 
-vagrant up
+echo "Starting Vagrant VM..."
+if ! vagrant up &>/dev/null; then
+    echo "Error while starting VM"
+    exit 1
+fi
 
-while ! vagrant ssh -c "exit" 2>/dev/null; do
-  echo "Waiting for Vagrant to be ready..."
-  sleep 5
+echo "Vagrant VM started successfully."
+
+echo "Waiting for Vagrant to be ready..."
+while true; do
+    vagrant ssh -c "exit" &>/dev/null
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    sleep 5
 done
 
-SERVER_IP=$(vagrant ssh -c "hostname -I | awk '{print \$2}'" 2>/dev/null | tr -d '\r')
+echo "Copying ./BGP folder to VM..."
+if ! vagrant scp ./BGP/ default:/home/vagrant/BGP -r &>/dev/null; then
+    echo "Error while uploading BGP folder"
+    exit 1
+fi
 
-echo "Detected VM IP: $SERVER_IP"
-
-scp -r ./BGP vagrant@$SERVER_IP:/home/vagrant/BGP
 echo "Files copied to VM successfully."
