@@ -29,3 +29,14 @@ try {
 }
 
 Write-Host "Files copied to VM successfully."
+
+
+try {
+    vagrant ssh -c "bash /home/vagrant/BGP/p1_init.sh" *> $null
+} catch {
+    Write-Host "Error while executing init script:"
+    Write-Host $_
+    exit 1
+}
+
+Write-Host "GNS3 initialization script executed successfully."

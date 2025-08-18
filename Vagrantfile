@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
     vm.vm.box = BOX
     vm.vm.box_url = BOX_URL
     vm.vm.network "public_network"
+    vm.vm.network "forwarded_port", guest: 3080, host: 3080
     vm.vm.provider "virtualbox" do |vb|
       vb.name = CONFIG_NAME
       vb.cpus = 1
