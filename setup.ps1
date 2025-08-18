@@ -32,7 +32,7 @@ Write-Host "Files copied to VM successfully."
 
 
 try {
-    vagrant ssh -c "bash /home/vagrant/BGP/p1_init.sh" *> $null
+    vagrant ssh -c "bash /home/vagrant/BGP/p1_init.sh"
 } catch {
     Write-Host "Error while executing init script:"
     Write-Host $_

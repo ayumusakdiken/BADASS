@@ -1,69 +1,60 @@
 #!/bin/bash
 
 echo "Updating package list..."
-if apt update >/dev/null 2>&1; then
+if sudo apt update >/dev/null 2>&1; then
     echo "✓ Package list updated successfully"
 else
     echo "✗ Failed to update package list"
-    apt update
+    sudo apt update
     exit 1
 fi
 
 echo "Installing Docker..."
-if apt install -y docker.io >/dev/null 2>&1; then
+if sudo apt install -y docker.io >/dev/null 2>&1; then
     echo "✓ Docker installed successfully"
 else
     echo "✗ Failed to install Docker"
-    apt install -y docker.io
+    sudo apt install -y docker.io
     exit 1
 fi
 
 echo "Starting Docker service..."
-if systemctl start docker >/dev/null 2>&1; then
+if sudo systemctl start docker >/dev/null 2>&1; then
     echo "✓ Docker service started"
 else
     echo "✗ Failed to start Docker service"
-    systemctl status docker
+    sudo systemctl status docker
     exit 1
 fi
 
-if systemctl enable docker >/dev/null 2>&1; then
+if sudo systemctl enable docker >/dev/null 2>&1; then
     echo "✓ Docker service enabled"
 else
     echo "✗ Failed to enable Docker service"
-    systemctl status docker
+    sudo systemctl status docker
 fi
 
-echo "Installing gns3..."
-if apt install -y 
- gns3-gui >/dev/null 2>&1; then
-    echo "✓ GNS3 installed successfully"
+echo "Installing pip3..."
+if sudo apt install -y python3-pip net-tools >/dev/null 2>&1; then
+    echo "✓ pip3 installed successfully"
 else
-    echo "✗ Failed to install gns3"
+    echo "✗ Failed to install pip3"
     exit 1
 fi
 
-echo "Installing npm..."
-if apt install -y git nodejs npm >/dev/null 2>&1; then
-    echo "✓ npm installed successfully"
+echo "Installing gns3-server..."
+if sudo pip3 install gns3-server --break-system-packages >/dev/null 2>&1; then
+    echo "✓ gns3-server installed successfully"
+    export PATH=$HOME/.local/bin:$PATH
+    nohup gns3server >/dev/null 2>&1 &
+    echo "GNS3 server is running in the background"
 else
-    echo "✗ Failed to install npm"
+    echo "✗ Failed to install gns3-server"
     exit 1
 fi
 
-echo "Installing GNS3 Web-UI..."
-if git clone https://github.com/GNS3/gns3-web-ui.git  > /dev/null 2>&1; then
-    echo "✓ GNS3 Web-UI installed successfully"
-    cd gns3-web-ui
-    exho "Installing GNS3 Web-UI dependencies..."
-    npm install
-    npm start
-    echo "✓ GNS3 Web-UI dependencies installed successfully"
-    echo "http://localhost:3080"
-else
-    echo "✗ Failed to install GNS3 Web-UI"
-    exit 1
-fi
-
+IP_ADDR=$(sudo ifconfig | grep -w "inet" | grep "192.168" | awk '{print $2}')
+echo ""
+echo -e "\e[1;32mhttp://$IP_ADDR:3080\e[0m"
 echo ""
 echo "🎉 init.sh script completed successfully!"
