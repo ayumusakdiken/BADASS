@@ -1,0 +1,4 @@
+FROM alpine
+ENV username=ayumusak
+RUN apt-get update && apt-get upgrade -y
+RUN hostnamectl set-hostname "host_${username}-1"
