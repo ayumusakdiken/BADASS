@@ -46,7 +46,7 @@ echo "Installing gns3-server..."
 if sudo pip3 install gns3-server --break-system-packages >/dev/null 2>&1; then
     echo "✓ gns3-server installed successfully"
     export PATH=$HOME/.local/bin:$PATH
-    nohup gns3server >/dev/null 2>&1 &
+    nohup sudo gns3server >/dev/null 2>&1 &
     echo "GNS3 server is running in the background"
 else
     echo "✗ Failed to install gns3-server"
