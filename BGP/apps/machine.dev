@@ -1,4 +1,6 @@
-FROM alpine
-ENV username=ayumusak
-RUN apt-get update && apt-get upgrade -y
-RUN hostnamectl set-hostname "host_${username}-1"
+FROM debian
+
+# Paket listelerini güncelle ve gerekli paketleri yükle    
+RUN apt-get update && \
+    apt-get install -y git curl net-tools iputils-ping && \
+    rm -rf /var/lib/apt/lists/*

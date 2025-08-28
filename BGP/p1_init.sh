@@ -1,5 +1,4 @@
 #!/bin/bash
-
 echo "Updating package list..."
 if sudo apt update >/dev/null 2>&1; then
     echo "✓ Package list updated successfully"
@@ -10,7 +9,7 @@ else
 fi
 
 echo "Installing Docker..."
-if sudo apt install -y docker.io >/dev/null 2>&1; then
+if sudo apt install -y docker.io libpcap-dev >/dev/null 2>&1; then
     echo "✓ Docker installed successfully"
 else
     echo "✗ Failed to install Docker"
@@ -61,19 +60,32 @@ else
     exit 1
 fi
 
-echo "Installing gns3-server..."
-if sudo pip3 install gns3-server --break-system-packages >/dev/null 2>&1; then
-    echo "✓ gns3-server installed successfully"
-    export PATH=$HOME/.local/bin:$PATH
-    nohup sudo gns3server >/dev/null 2>&1 &
-    echo "GNS3 server is running in the background"
-else
-    echo "✗ Failed to install gns3-server"
-    exit 1
-fi
 
 IP_ADDR=$(sudo ifconfig | grep -w "inet" | grep "192.168" | awk '{print $2}')
 echo ""
 echo -e "\e[1;32mhttp://$IP_ADDR:3080\e[0m"
 echo ""
 echo "🎉 init.sh script completed successfully!"
+
+
+echo "build router.dev"
+pwd
+if sudo docker build -t router -f ./BGP/apps/router.dev ./BGP/apps ; then
+    echo "✓ router.dev built successfully"
+else
+    echo "✗ Failed to build router.dev"
+    exit 1
+fi
+
+
+echo "cloning ubridge..."
+sudo git clone https://github.com/GNS3/ubridge.git  /usr/local/bin/ubridge 
+echo "✓ ubridge cloned successfully"
+cd /usr/local/bin/ubridge
+sudo make
+sudo make install
+sudo setcap cap_net_admin,cap_net_raw=eip /usr/local/bin/ubridge
+sudo usermod -aG ubridge $USER
+chmod +x /usr/local/bin/ubridge/ubridge
+sudo env "PATH=$PATH" ubridge
+echo "✓ ubridge installed successfully"

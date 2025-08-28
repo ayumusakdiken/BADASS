@@ -1,6 +1,6 @@
 Write-Host "Starting Vagrant VM..."
 try {
-    vagrant up *> $null
+    vagrant up 
 } catch {
     Write-Host "Error while starting VM:"
     Write-Host $_
