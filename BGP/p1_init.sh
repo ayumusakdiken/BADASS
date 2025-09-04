@@ -67,6 +67,7 @@ echo -e "\e[1;32mhttp://$IP_ADDR:3080\e[0m"
 echo ""
 echo "🎉 init.sh script completed successfully!"
 
+exit 1
 
 echo "build router.dev"
 pwd
@@ -79,13 +80,13 @@ fi
 
 
 echo "cloning ubridge..."
-sudo git clone https://github.com/GNS3/ubridge.git  /usr/local/bin/ubridge 
+sudo git clone https://github.com/GNS3/ubridge.git
 echo "✓ ubridge cloned successfully"
-cd /usr/local/bin/ubridge
+cd ubridge
 sudo make
 sudo make install
-sudo setcap cap_net_admin,cap_net_raw=eip /usr/local/bin/ubridge
-sudo usermod -aG ubridge $USER
-chmod +x /usr/local/bin/ubridge/ubridge
-sudo env "PATH=$PATH" ubridge
+# sudo setcap cap_net_admin,cap_net_raw=eip /usr/local/bin/ubridge
+# sudo usermod -aG ubridge $USER
+# chmod +x /usr/local/bin/ubridge/ubridge
+# sudo env "PATH=$PATH" ubridge
 echo "✓ ubridge installed successfully"

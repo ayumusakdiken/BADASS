@@ -1,23 +1,21 @@
 FROM debian:trixie
 
-# Paket listelerini güncelle ve temel paketleri yükle
 RUN apt-get update && \
     apt-get install -y curl net-tools iputils-ping vim gnupg2 procps && \
     rm -rf /var/lib/apt/lists/*
 
-# FRR GPG key ekle
 RUN curl -s https://deb.frrouting.org/frr/keys.gpg | tee /usr/share/keyrings/frrouting.gpg > /dev/null
 
-# FRR sürümü
 ENV FRRVER=frr-stable
-
-# FRR repository ekle
 RUN echo "deb [signed-by=/usr/share/keyrings/frrouting.gpg] https://deb.frrouting.org/frr trixie $FRRVER" \
     > /etc/apt/sources.list.d/frr.list
 
-# FRR ve Python araçlarını yükle
 RUN apt-get update && \
     apt-get install -y frr frr-pythontools && \
     rm -rf /var/lib/apt/lists/*
 
 COPY ./daemons /etc/frr/
+
+ENV PATH=$PATH:/usr/lib/frr
+
+CMD ["/usr/lib/frr/frr", "start"]
